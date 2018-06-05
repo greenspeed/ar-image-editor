@@ -5,9 +5,11 @@
       <input type="file" id="imageLoader"  @change="updateCanvasImage">  
     </div>
     <div v-if="isUploaded">
-      <canvas id="imageCanvas" ref="imageCanvas"></canvas>
-      <div>Brightness</div>
-      <input type="range" @change="changeBrightness" min="0" max="255" step="1" v-model="value" class="brightness">
+      <canvas id="imageCanvas" ref="imageCanvas" class="preview-element"></canvas>
+      <div class="filter-title">Brightness</div>
+      <div class="input-container">
+        <input type="range" @input="changeBrightness" min="0" max="255" step="1" v-model="value" >
+      </div> 
     </div>
   </div>
 </template>
@@ -80,9 +82,9 @@ export default {
         var brightenedGreen = brightnessMul + green;
         var brightenedBlue = brightnessMul + blue;
 
-        dataArray[i] = brightenedRed;
-        dataArray[i + 1] = brightenedGreen;
-        dataArray[i + 2] = brightenedBlue;
+        dataArray[i] = Math.max(0, Math.min(255, brightenedRed));
+        dataArray[i + 1] = Math.max(0, Math.min(255, brightenedGreen));
+        dataArray[i + 2] = Math.max(0, Math.min(255, brightenedBlue));
       }
 
       ctx.putImageData(imageData, 0, 0);
@@ -109,6 +111,21 @@ a {
   color: #42b983;
 }
 
+.filter-title {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.input-container {
+  background-color: white;
+  width: 50%;
+  height: 40px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hello {
   outline: 2px dashed grey; /* the dash box */
   outline-offset: -10px;
@@ -119,7 +136,92 @@ a {
   position: relative;
   cursor: pointer;
 }
-.brightness {
+
+
+.preview-element {
   width: 50%;
 }
+
+
+/*** Sytle the track ***/
+input[type="range"] { 
+    margin: auto;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    width: 90%;
+    height: auto;
+    cursor: pointer;
+    border-radius: 0; /* iOS */
+}
+
+::-webkit-slider-runnable-track {
+    background: #ddd;
+    height: 5px;
+}
+
+/*
+ * 1. Set to 0 width and remove border for a slider without a thumb
+ */
+::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 36px; /* 1 */
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    margin-top: -14px;
+    box-shadow: -100vw 0 0 100vw dodgerblue, 0px 0px 1px #0d0d0d;
+    border: 2px solid #999; /* 1 */
+}
+
+::-moz-range-track {
+    height: 2px;
+    background: #ddd;
+}
+
+::-moz-range-thumb {
+    background: #fff;
+    height: 36px;
+    width: 36px;
+    border: 3px solid #999;
+    border-radius: 50%;
+    box-shadow: -100vw 0 0 100vw dodgerblue;
+    box-sizing: border-box;
+}
+
+::-ms-fill-lower { 
+    background: dodgerblue;
+}
+
+::-ms-thumb { 
+    background: #fff;
+    border: 2px solid #999;
+    height: 36px;
+    width: 36px;
+    box-sizing: border-box;
+}
+
+::-ms-ticks-after { 
+    display: none; 
+}
+
+::-ms-ticks-before { 
+    display: none; 
+}
+
+::-ms-track { 
+    background: #ddd;
+    color: transparent;
+    height: 2px;
+    border: none;
+}
+
+::-ms-tooltip { 
+    display: none;
+}
+
+
+/*****/
+
+
 </style>
