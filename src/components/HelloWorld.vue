@@ -1,41 +1,95 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://github.com/vuejs/vue-cli/tree/dev/docs" target="_blank">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+  <div>
+    <div class="hello" v-if="!isUploaded">
+      <h1>Upload images</h1>
+      <input type="file" id="imageLoader"  @change="updateCanvasImage">  
+    </div>
+    <div v-if="isUploaded">
+      <canvas id="imageCanvas" ref="imageCanvas"></canvas>
+      <div>Brightness</div>
+      <input type="range" @change="changeBrightness" min="0" max="255" step="1" v-model="value" class="brightness">
+    </div>
   </div>
 </template>
 
+
 <script>
+import { upload } from "../file-upload.service";
+
 export default {
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
     msg: String
+  },
+  data() {
+    return {
+      isUploaded: false,
+      image: null,
+      value: 0
+    };
+  },
+  methods: {
+    updateCanvasImage(e) {
+      var self = this;
+
+      var reader,
+        files = e.target.files;
+
+      var reader = new FileReader();
+
+      reader.onload = e => {
+        var img = new Image();
+        img.onload = function() {
+          self.image = img;
+          self.drawCanvasImage(img);
+        };
+        img.src = event.target.result;
+      };
+
+      reader.readAsDataURL(files[0]);
+      this.isUploaded = true;
+    },
+    drawCanvasImage(img) {
+      var canvas = this.$refs.imageCanvas;
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+    },
+    changeBrightness(e) {
+      var canvas = this.$refs.imageCanvas;
+      canvas.width = this.image.width;
+      canvas.height = this.image.height;
+
+      var ctx = canvas.getContext("2d");
+
+      ctx.drawImage(this.image, 0, 0);
+
+      var imageData = ctx.getImageData(0, 0, this.image.width, this.image.height);
+      var dataArray = imageData.data; 
+
+      var brightnessMul = parseInt(this.value); // brightness multiplier
+
+      for(var i = 0; i < dataArray.length; i += 4) {
+        var red = dataArray[i]; 
+        var green = dataArray[i + 1]; 
+        var blue = dataArray[i + 2]; 
+
+        var brightenedRed = brightnessMul + red;
+        var brightenedGreen = brightnessMul + green;
+        var brightenedBlue = brightnessMul + blue;
+
+        dataArray[i] = brightenedRed;
+        dataArray[i + 1] = brightenedGreen;
+        dataArray[i + 2] = brightenedBlue;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      
+    }
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -53,5 +107,19 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.hello {
+  outline: 2px dashed grey; /* the dash box */
+  outline-offset: -10px;
+  background: lightcyan;
+  color: dimgray;
+  padding: 10px 10px;
+  min-height: 200px; /* minimum height */
+  position: relative;
+  cursor: pointer;
+}
+.brightness {
+  width: 50%;
 }
 </style>
