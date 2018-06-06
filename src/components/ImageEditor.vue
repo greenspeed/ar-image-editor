@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="hello" v-if="!isUploaded">
-      <h1>Upload images</h1>
+      <h1>Upload Image</h1>
       <input type="file" id="imageLoader"  @change="updateCanvasImage">  
     </div>
     <div v-if="isUploaded">
       <canvas id="imageCanvas" ref="imageCanvas" class="preview-element"></canvas>
       <div class="filter-title">Brightness</div>
       <div class="input-container">
-        <input type="range" @input="changeBrightness" min="0" max="255" step="1" v-model="value" >
+        <input type="range" @input="changeBrightness" @change="changeBrightness" min="0" max="255" step="1" v-model="value" v-bind:style="styles">
       </div> 
     </div>
   </div>
@@ -19,7 +19,7 @@
 import { upload } from "../file-upload.service";
 
 export default {
-  name: "HelloWorld",
+  name: "ImageEditor",
   props: {
     msg: String
   },
@@ -27,7 +27,10 @@ export default {
     return {
       isUploaded: false,
       image: null,
-      value: 0
+      value: 0,
+      styles: {
+        'background-color': "#9aa0aa"
+      }
     };
   },
   methods: {
@@ -60,6 +63,10 @@ export default {
       ctx.drawImage(img, 0, 0);
     },
     changeBrightness(e) {
+
+      var val = (this.value - 0) / (255 - 0);
+      this.styles = {'background-image': '-webkit-gradient(linear, left top, right top, '+ 'color-stop(' + val + ', #006fff), ' + 'color-stop(' + val + ', #9aa0aa)'+ ')'};
+
       var canvas = this.$refs.imageCanvas;
       canvas.width = this.image.width;
       canvas.height = this.image.height;
@@ -119,7 +126,7 @@ a {
 .input-container {
   background-color: white;
   width: 50%;
-  height: 40px;
+  height: 50px;
   margin: auto;
   display: flex;
   justify-content: center;
@@ -129,7 +136,7 @@ a {
 .hello {
   outline: 2px dashed grey; /* the dash box */
   outline-offset: -10px;
-  background: lightcyan;
+  background: #82d6ff;
   color: dimgray;
   padding: 10px 10px;
   min-height: 200px; /* minimum height */
@@ -148,41 +155,43 @@ input[type="range"] {
     margin: auto;
     -webkit-appearance: none;
     position: relative;
-    overflow: hidden;
+    /* overflow:hidden; */
     width: 90%;
     height: auto;
     cursor: pointer;
     border-radius: 0; /* iOS */
 }
 
+
 ::-webkit-slider-runnable-track {
-    background: #ddd;
+    background-color: transparent;
     height: 5px;
 }
+
 
 /*
  * 1. Set to 0 width and remove border for a slider without a thumb
  */
 ::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 36px; /* 1 */
-    height: 40px;
+    width: 25px; /* 1 */
+    height: 25px;
     background: #fff;
     border-radius: 50%;
-    margin-top: -14px;
-    box-shadow: -100vw 0 0 100vw dodgerblue, 0px 0px 1px #0d0d0d;
-    border: 2px solid #999; /* 1 */
+    margin-top: -10px;
+    box-shadow: 0px 2px 4px #0d0d0d, 0px 0px 1px #0d0d0d;
+    /* border: 1px solid #999;  */
 }
 
 ::-moz-range-track {
     height: 2px;
-    background: #ddd;
+    background-color: transparent;
 }
 
 ::-moz-range-thumb {
     background: #fff;
-    height: 36px;
-    width: 36px;
+    height: 20px;
+    width: 20px;
     border: 3px solid #999;
     border-radius: 50%;
     box-shadow: -100vw 0 0 100vw dodgerblue;
@@ -210,7 +219,7 @@ input[type="range"] {
 }
 
 ::-ms-track { 
-    background: #ddd;
+    background-color: transparent;
     color: transparent;
     height: 2px;
     border: none;
@@ -220,8 +229,10 @@ input[type="range"] {
     display: none;
 }
 
+input[type=range]:focus {
+  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
 
-/*****/
 
 
 </style>

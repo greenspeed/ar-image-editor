@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <HelloWorld msg="Welcome to editor App"/>
+    <ImageEditor msg="Welcome to editor App"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ImageEditor from './components/ImageEditor.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    ImageEditor
   }
 }
 </script>
