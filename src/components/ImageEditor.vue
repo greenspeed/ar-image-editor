@@ -16,7 +16,6 @@
 
 
 <script>
-import { upload } from "../file-upload.service";
 
 export default {
   name: "ImageEditor",
@@ -165,7 +164,7 @@ input[type="range"] {
 
 ::-webkit-slider-runnable-track {
     background-color: transparent;
-    height: 5px;
+    height: 2px;
 }
 
 
