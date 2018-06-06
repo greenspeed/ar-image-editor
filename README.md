@@ -1,5 +1,8 @@
 # ar-image-editor
 
+Run instruction
+Use "yarn serve" to run it locally
+
 A basic image editor
 Introduction
 One of the areas that Audience Republic takes great pride in is in great design. We spend a lot of money and time on designs and take pride in the way our users interact with our product.
